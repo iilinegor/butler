@@ -7,6 +7,7 @@ type Artef struct {
 	Tok     string `json:"tok"`
 	GitPath string `json:"gitPath" bson:"gitPath"`
 	Bin     string `json:"bin"`
+	Port    string `json:"port"`
 }
 
 // Squad is registry for runners
