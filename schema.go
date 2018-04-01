@@ -12,12 +12,15 @@ type Artef struct {
 
 // Squad is registry for runners
 type Squad struct {
-	Name string `json:"name"`
-	Ms   []Ms   `json:"ms"`
+	Name string   `json:"name"`
+	Ips  []string `hson:"ips"`
+	Ms   []Ms     `json:"ms"`
 }
 
 // Ms is microservice declaration type
 type Ms struct {
-	Name string `json:"name"`
-	Port string `json:"port"`
+	ID    string `json:"name"`
+	Bin   string `json:"bin"`
+	Param string `json:"param"`
+	Port  string `json:"port"`
 }
