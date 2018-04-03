@@ -12,9 +12,15 @@ type Artef struct {
 
 // Squad is registry for runners
 type Squad struct {
-	Name string   `json:"name"`
-	Ips  []string `hson:"ips"`
-	Ms   []Ms     `json:"ms"`
+	Name string `json:"name"`
+	Ips  Ips    `hson:"ips"`
+	Ms   []Ms   `json:"ms"`
+}
+
+// Ips is v4 & v6 container
+type Ips struct {
+	V4 string `json:"v4"`
+	V6 string `json:"v6"`
 }
 
 // Ms is microservice declaration type

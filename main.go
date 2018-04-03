@@ -27,8 +27,11 @@ func main() {
 
 	e.POST("/repo", getFromRepo)
 
+	e.POST("/reg", regRunner)
+
 	e.GET("/artef", getArtef)
-	e.GET("/squad", getSquad)
+	e.GET("/squad", getSquads)
+	e.GET("/squad/:name", getSquad)
 
 	e.POST("/artef/update", setArtef)
 	e.POST("/squad/update", setSquad)

@@ -53,6 +53,14 @@ func getConfig(target string) (int, string) {
 	case "squad":
 		t, _ := json.Marshal(squad)
 		return http.StatusOK, string(t)
+
+	default:
+		for i := range *squad {
+			if (*squad)[i].Name == target {
+				t, _ := json.Marshal((*squad)[i])
+				return http.StatusOK, string(t)
+			}
+		}
 	}
 	return http.StatusOK, " "
 }
@@ -95,4 +103,21 @@ func setConfig(c echo.Context, target string) (int, string) {
 	}
 
 	return http.StatusOK, " "
+}
+
+func uniqName() string {
+	got := false
+
+	for _, name := range Names {
+		got = false
+		for _, s := range *squad {
+			if s.Name == name {
+				got = true
+			}
+		}
+		if !got {
+			return name
+		}
+	}
+	return "no free names"
 }
