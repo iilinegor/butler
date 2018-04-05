@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"net/url"
@@ -10,10 +11,16 @@ import (
 )
 
 var (
-	rootPath = "./art_root"
+	rootPath = "/root/art_root/"
+	port     = "3030"
 )
 
 func init() {
+	flag.StringVar(&port, "p", port, "port")
+	flag.Parse()
+
+	log.Println("Init butler...")
+
 	initDB()
 }
 
@@ -39,8 +46,7 @@ func main() {
 	// e.GET("/bin", upFile)
 	e.Static("/bin", rootPath)
 
-	e.Logger.Fatal(e.Start(":3030"))
-
+	e.Logger.Fatal(e.Start(":" + port))
 }
 
 func gitTrigger() {

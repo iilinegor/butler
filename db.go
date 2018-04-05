@@ -37,11 +37,12 @@ func initDB() {
 
 	t, _ := json.Marshal(artef)
 	log.Println(string(t))
-	// gitTrigger()
+	gitTrigger()
 }
 
 func setVer(bin string) {
-	colArtef.Update(bson.M{"bin": bin}, bson.M{"$inc": "ver"})
+	colArtef.Update(bson.M{"bin": bin}, bson.M{"$inc": bson.M{"ver": 1}})
+	colArtef.Find(bson.M{}).All(artef)
 }
 
 func getConfig(target string) (int, string) {
@@ -100,6 +101,15 @@ func setConfig(c echo.Context, target string) (int, string) {
 		colSquad.Insert(tmp)
 		t, _ := json.Marshal(tmp)
 		return http.StatusOK, string(t)
+
+	
+	default:
+		// for i := range *squad {
+		// 	if (*squad)[i].Name == target {
+		// 		t, _ := json.Marshal((*squad)[i])
+		// 		return http.StatusOK, string(t)
+		// 	}
+		// }
 	}
 
 	return http.StatusOK, " "

@@ -12,10 +12,10 @@ import (
 )
 
 func getFromRepo(c echo.Context) error {
-
+	log.Println("Reciving started..")
 	file, err := c.FormFile("file")
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 
 	log.Println(file.Filename + ": updating binary ")
@@ -23,20 +23,20 @@ func getFromRepo(c echo.Context) error {
 
 	src, err := file.Open()
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 	defer src.Close()
 
 	// Destination
-	dst, err := os.Create("art_root/" + file.Filename)
+	dst, err := os.Create(rootPath + file.Filename)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 	defer dst.Close()
 
 	// Copy
 	if _, err = io.Copy(dst, src); err != nil {
-		return err
+		log.Println(err)
 	}
 
 	return c.String(http.StatusOK, file.Filename)
@@ -52,7 +52,8 @@ func regRunner(c echo.Context) error {
 
 	for _, s := range *squad {
 		if s.Ips.V4 == tmpSquad.Ips.V4 {
-			return c.String(http.StatusBadRequest, tmpSquad.Ips.V4+" already used by "+s.Name)
+			ts, _ := json.Marshal(s)
+			return c.String(http.StatusBadRequest, string(ts))
 		}
 	}
 
