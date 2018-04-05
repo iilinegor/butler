@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"flag"
 	"log"
 	"net/http"
@@ -51,13 +53,39 @@ func main() {
 
 func gitTrigger() {
 	for _, a := range *artef {
-		log.Println(a.Name + ": triggering git repo")
-		payload := url.Values{}
-		payload.Add("token", a.Tok)
-		payload.Add("ref", "master")
-		_, err := http.PostForm(a.GitPath, payload)
-		if err != nil {
-			log.Println(err)
+		if a.Bin != "butler" {
+			log.Println(a.Name + ": triggering git repo")
+			payload := url.Values{}
+			payload.Add("token", a.Tok)
+			payload.Add("ref", "master")
+			_, err := http.PostForm(a.GitPath, payload)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+	}
+}
+
+func broadcastArtef() {
+	t, _ := json.Marshal(*artef)
+	for _, s := range *squad {
+		res, err := http.Post("http://"+s.Ips.V4+":9000/update/artef", "application/json", bytes.NewBuffer(t))
+		if res.StatusCode != 200 {
+			log.Println("Failed broadcast to", s.Name, err)
+		}
+	}
+}
+
+func broadcastSquad() {
+	t, _ := json.Marshal(*squad)
+	for _, s := range *squad {
+		for _, m := range s.Ms {
+			if m.Bin == "gateway" {
+				res, err := http.Post("http://"+s.Ips.V4+":"+m.Port+"/update", "application/json", bytes.NewBuffer(t))
+				if res.StatusCode != 200 {
+					log.Println("Failed update gateway on", s.Name, err)
+				}
+			}
 		}
 	}
 }

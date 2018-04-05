@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -56,9 +58,9 @@ func getConfig(target string) (int, string) {
 		return http.StatusOK, string(t)
 
 	default:
-		for i := range *squad {
-			if (*squad)[i].Name == target {
-				t, _ := json.Marshal((*squad)[i])
+		for _, s := range *squad {
+			if s.Name == target {
+				t, _ := json.Marshal(s)
 				return http.StatusOK, string(t)
 			}
 		}
@@ -102,17 +104,33 @@ func setConfig(c echo.Context, target string) (int, string) {
 		t, _ := json.Marshal(tmp)
 		return http.StatusOK, string(t)
 
-	
 	default:
-		// for i := range *squad {
-		// 	if (*squad)[i].Name == target {
-		// 		t, _ := json.Marshal((*squad)[i])
-		// 		return http.StatusOK, string(t)
-		// 	}
-		// }
+		tmp := Squad{}
+		if err := c.Bind(&tmp); err != nil {
+			log.Println(err)
+		}
+
+		for _, s := range *squad {
+			if s.Name == target {
+				t, _ := json.Marshal(tmp)
+				res, err := http.Post("http://"+s.Ips.V4+":9000/update/squad", "application/json", bytes.NewBuffer(t))
+				if res.StatusCode != 200 {
+					log.Println("Failed update squad on", s.Name, err)
+				} else {
+					body, _ := ioutil.ReadAll(res.Body)
+					json.Unmarshal(body, &tmp)
+
+					colSquad.Update(bson.M{"name": s.Name}, bson.M{"$set": tmp})
+					colSquad.Find(bson.M{}).All(squad)
+
+					broadcastSquad()
+					return http.StatusOK, string(body)
+				}
+			}
+		}
 	}
 
-	return http.StatusOK, " "
+	return http.StatusBadRequest, "Something wrong..."
 }
 
 func uniqName() string {

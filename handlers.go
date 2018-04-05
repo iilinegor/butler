@@ -39,6 +39,8 @@ func getFromRepo(c echo.Context) error {
 		log.Println(err)
 	}
 
+	broadcastArtef()
+
 	return c.String(http.StatusOK, file.Filename)
 }
 
