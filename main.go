@@ -67,7 +67,7 @@ func gitTrigger() {
 }
 
 func broadcastArtef() {
-	t, _ := json.Marshal(*artef)
+	t, _ := json.Marshal(artef)
 	for _, s := range *squad {
 		res, err := http.Post("http://"+s.Ips.V4+":9000/update/artef", "application/json", bytes.NewBuffer(t))
 		if res.StatusCode != 200 {
@@ -77,7 +77,7 @@ func broadcastArtef() {
 }
 
 func broadcastSquad() {
-	t, _ := json.Marshal(*squad)
+	t, _ := json.Marshal(squad)
 	for _, s := range *squad {
 		for _, m := range s.Ms {
 			if m.Bin == "gateway" {
