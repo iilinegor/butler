@@ -43,7 +43,8 @@ func main() {
 	e.GET("/squad/:name", getSquad)
 
 	e.POST("/artef/update", setArtef)
-	e.POST("/squad/update", setSquad)
+	e.POST("/squad/update", setSquads)
+	e.POST("/squad/update/:name", setSquad)
 
 	// e.GET("/bin", upFile)
 	e.Static("/bin", rootPath)

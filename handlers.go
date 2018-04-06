@@ -95,6 +95,10 @@ func setArtef(c echo.Context) error {
 	return c.String(setConfig(c, "artef"))
 }
 
-func setSquad(c echo.Context) error {
+func setSquads(c echo.Context) error {
 	return c.String(setConfig(c, "squad"))
+}
+
+func setSquad(c echo.Context) error {
+	return c.String(setConfig(c, c.Param("name")))
 }
