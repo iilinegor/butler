@@ -12,13 +12,12 @@ import (
 )
 
 func getFromRepo(c echo.Context) error {
-	log.Println("Reciving started..")
 	file, err := c.FormFile("file")
 	if err != nil {
 		log.Println(err)
 	}
 
-	log.Println(file.Filename + ": updating binary ")
+	log.Printf("[%s]: Reciving started..\n", file.Filename)
 	setVer(file.Filename)
 
 	src, err := file.Open()
@@ -39,7 +38,8 @@ func getFromRepo(c echo.Context) error {
 		log.Println(err)
 	}
 
-	broadcastArtef()
+	log.Printf("[%s]: Reciving complite.\n", file.Filename)
+	go broadcastArtef(file.Filename)
 
 	return c.String(http.StatusOK, file.Filename)
 }

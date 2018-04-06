@@ -54,24 +54,38 @@ func main() {
 func gitTrigger() {
 	for _, a := range *artef {
 		if a.Bin != "butler" {
-			log.Println(a.Name + ": triggering git repo")
-			payload := url.Values{}
-			payload.Add("token", a.Tok)
-			payload.Add("ref", "master")
-			_, err := http.PostForm(a.GitPath, payload)
-			if err != nil {
-				log.Println(err)
-			}
+			go func(a Artef) {
+				log.Println(a.Name + ": triggering git repo")
+				payload := url.Values{}
+				payload.Add("token", a.Tok)
+				payload.Add("ref", "master")
+				_, err := http.PostForm(a.GitPath, payload)
+				if err != nil {
+					log.Println(err)
+				}
+			}(a)
 		}
 	}
 }
 
-func broadcastArtef() {
+func broadcastArtef(bin string) {
 	t, _ := json.Marshal(artef)
 	for _, s := range *squad {
-		res, err := http.Post("http://"+s.Ips.V4+":9000/update/artef", "application/json", bytes.NewBuffer(t))
-		if res.StatusCode != 200 {
-			log.Println("Failed broadcast to", s.Name, err)
+		if s.Ips.V4 != "192.168.0.101" {
+			needUpdate := false
+			for _, ms := range s.Ms {
+				if ms.Bin == bin {
+					needUpdate = true
+				}
+			}
+			if needUpdate {
+				res, err := http.Post("http://"+s.Ips.V4+":9000/update/artef", "application/json", bytes.NewBuffer(t))
+				if err != nil || res.StatusCode != 200 {
+					log.Printf("[%s]: Failed broadcast to %s.\n", bin, s.Name)
+				} else {
+					log.Printf("[%s]: Sent artef to %s.\n", bin, s.Name)
+				}
+			}
 		}
 	}
 }
