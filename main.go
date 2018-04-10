@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/fatih/color"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
@@ -15,6 +16,11 @@ import (
 var (
 	rootPath = "/root/art_root/"
 	port     = "3030"
+
+	cYellow = color.New(color.FgYellow).SprintFunc()
+	cRed    = color.New(color.FgRed).SprintFunc()
+	cBold   = color.New(color.Bold).SprintFunc()
+	cGreen  = color.New(color.FgGreen).SprintFunc()
 )
 
 func init() {
@@ -56,7 +62,7 @@ func gitTrigger() {
 	for _, a := range *artef {
 		if a.Bin != "butler" {
 			go func(a Artef) {
-				log.Println(a.Name + ": triggering git repo")
+				log.Printf("[%s]:\t triggering git repo", cBold(a.Name))
 				payload := url.Values{}
 				payload.Add("token", a.Tok)
 				payload.Add("ref", "master")
@@ -82,9 +88,9 @@ func broadcastArtef(bin string) {
 			if needUpdate {
 				res, err := http.Post("http://"+s.Ips.V4+":9000/update/artef", "application/json", bytes.NewBuffer(t))
 				if err != nil || res.StatusCode != 200 {
-					log.Printf("[%s]: Failed broadcast to %s.\n", bin, s.Name)
+					log.Printf("[%s]: Failed broadcast to %s.\n", cRed(bin), cBold(s.Name))
 				} else {
-					log.Printf("[%s]: Sent artef to %s.\n", bin, s.Name)
+					log.Printf("[%s]: Sent artef to %s.\n", cGreen(bin), cBold(s.Name))
 				}
 			}
 		}
@@ -99,6 +105,7 @@ func broadcastSquad() {
 				res, err := http.Post("http://"+s.Ips.V4+":"+m.Port+"/update", "application/json", bytes.NewBuffer(t))
 				if res.StatusCode != 200 {
 					log.Println("Failed update gateway on", s.Name, err)
+					log.Printf("[%s]: Failed update gateway on.\n %s", cRed(s.Name), err)
 				}
 			}
 		}

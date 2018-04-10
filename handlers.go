@@ -17,7 +17,7 @@ func getFromRepo(c echo.Context) error {
 		log.Println(err)
 	}
 
-	log.Printf("[%s]: Reciving started..\n", file.Filename)
+	log.Printf("[%s]: Reciving started..\n", cBold(file.Filename))
 	setVer(file.Filename)
 
 	src, err := file.Open()
@@ -38,7 +38,7 @@ func getFromRepo(c echo.Context) error {
 		log.Println(err)
 	}
 
-	log.Printf("[%s]: Reciving complite.\n", file.Filename)
+	log.Printf("[%s]: Reciving complite.\n", cBold(file.Filename))
 	go broadcastArtef(file.Filename)
 
 	return c.String(http.StatusOK, file.Filename)

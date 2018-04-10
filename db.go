@@ -115,7 +115,7 @@ func setConfig(c echo.Context, target string) (int, string) {
 				t, _ := json.Marshal(tmp)
 				res, err := http.Post("http://"+s.Ips.V4+":9000/update/squad", "application/json", bytes.NewBuffer(t))
 				if res.StatusCode != 200 {
-					log.Println("Failed update squad on", s.Name, err)
+					log.Printf("[%s]: Failed update squad on. \n %s", cRed(s.Name), err)
 				} else {
 					body, _ := ioutil.ReadAll(res.Body)
 					json.Unmarshal(body, &tmp)
